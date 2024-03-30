@@ -1,9 +1,16 @@
 import { writable } from 'svelte/store';
-import type { DiscoverActionPayload } from '../../views/discover/discover';
-import { ENDPOINTS } from '$lib/api/endpoints';
-import { apiClient } from '$lib/api';
+import type {
+	DiscoverEventBriteActionPayloadWithSource,
+	DiscoverSortirAutourActionPayloadWithSource,
+	DiscoverTripadvisorActionPayloadWithSource
+} from '../../views/discover/discover';
+import { ENDPOINTS } from '$lib/api/client/endpoints';
+import { apiClient } from '$lib/api/client';
 
-interface requestSendDiscoverAction extends DiscoverActionPayload {}
+type requestSendDiscoverAction =
+	| DiscoverEventBriteActionPayloadWithSource
+	| DiscoverTripadvisorActionPayloadWithSource
+	| DiscoverSortirAutourActionPayloadWithSource;
 
 export const discover = writable({
 	sendDiscoverAction: (request: requestSendDiscoverAction) => {

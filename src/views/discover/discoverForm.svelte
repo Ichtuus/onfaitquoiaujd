@@ -1,64 +1,93 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { DiscoverActionPayload } from './discover';
+	import EventbriteForm from './form/eventbriteForm.svelte';
+	import TripadvisorForm from './form/tripadvisorForm.svelte';
+	import SortirAutourForm from './form/sortirautourForm.svelte';
+	import type {
+		DiscoverEventBriteActionPayloadWithSource,
+		DiscoverSortirAutourActionPayloadWithSource,
+		DiscoverTripadvisorActionPayloadWithSource
+	} from './discover';
 
-	interface emits {
-		'build:discover-action': DiscoverActionPayload;
-	}
+	const DISCOVERFORM_SOURCE_MODE = {
+		TRIPADVISOR: 'tripadvisor',
+		EVENTBRITE: 'eventbrite',
+		SORTIRAUTOUR: 'sortirautour'
+	};
 
 	const dispatch = createEventDispatcher<emits>();
-	let town = null as unknown as string;
-	let typeShift = null as unknown as string;
-	let meta = null as unknown as string;
-
-	function buildDiscoverAction() {
-		const payload: DiscoverActionPayload = {
-			...(town && { town }),
-			...(typeShift && { typeShift }),
-			...(meta && { meta })
-		};
-		dispatch('build:discover-action', payload);
+	interface emits {
+		'build:discover-sortirautour-action-withsource': DiscoverSortirAutourActionPayloadWithSource;
+		'build:discover-eventbrite-action-withsource': DiscoverEventBriteActionPayloadWithSource;
+		'build:discover-tripadvisor-action-withsource': DiscoverTripadvisorActionPayloadWithSource;
 	}
+
+	let source = 'tripadvisor';
 </script>
 
 <div class="rounded-lg bg-white p-8 shadow-lg">
-	<form class="flex flex-col">
-		<div class="mb-4 flex flex-row gap-4">
-			<label class="label">
-				<span>Ville</span>
-				<input bind:value={town} class="input" type="text" placeholder="Choisi une ville" />
-			</label>
+	<div class="mb-4 flex">
+		<label class="mr-2 flex items-center space-x-2">
+			<input
+				bind:group={source}
+				class="radio"
+				type="radio"
+				checked
+				name="radio-direct"
+				value="tripadvisor"
+			/>
+			<p>Tripadvisor</p>
+		</label>
 
-			<label class="label">
-				<span>Type</span>
-				<input
-					bind:value={typeShift}
-					class="input"
-					type="text"
-					placeholder="Choisi un type de sortie"
-				/>
-			</label>
-		</div>
-		<div class="flex-initial">
-			<label class="label">
-				<span>Méta</span>
-				<input
-					bind:value={meta}
-					class="input"
-					type="text"
-					placeholder="Ajoute des informations en plus"
-				/>
-			</label>
-		</div>
+		<label class="mr-2 flex items-center space-x-2">
+			<input
+				bind:group={source}
+				class="radio"
+				type="radio"
+				name="radio-direct"
+				value="eventbrite"
+			/>
+			<p>Eventbrite</p>
+		</label>
+		<label class="mr-2 flex items-center space-x-2">
+			<input
+				bind:group={source}
+				class="radio"
+				type="radio"
+				name="radio-direct"
+				value="sortirautour"
+			/>
+			<p>Sortirautour.fr</p>
+		</label>
+	</div>
 
-		<div class="mt-6 flex items-center justify-end gap-x-6">
-			<button
-				on:click={buildDiscoverAction}
-				type="submit"
-				class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-			>
-				Save
-			</button>
-		</div>
-	</form>
+	{#if source === DISCOVERFORM_SOURCE_MODE.EVENTBRITE}
+		<EventbriteForm
+			on:build:discover-eventbrite-action={(emittedValue) =>
+				dispatch('build:discover-eventbrite-action-withsource', {
+					source: source,
+					...emittedValue.detail
+				})}
+		/>
+	{/if}
+
+	{#if source === DISCOVERFORM_SOURCE_MODE.TRIPADVISOR}
+		<TripadvisorForm
+			on:build:discover-tripadvisor-action={(emittedValue) =>
+				dispatch('build:discover-tripadvisor-action-withsource', {
+					source: source,
+					...emittedValue.detail
+				})}
+		/>
+	{/if}
+
+	{#if source === DISCOVERFORM_SOURCE_MODE.SORTIRAUTOUR}
+		<SortirAutourForm
+			on:build:discover-sortirautour-action={(emittedValue) =>
+				dispatch('build:discover-sortirautour-action-withsource', {
+					source: source,
+					...emittedValue.detail
+				})}
+		/>
+	{/if}
 </div>
