@@ -1,7 +1,19 @@
 <script>
+	import { browser } from '$app/environment';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import '../app.css';
+
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				enabled: browser
+			}
+		}
+	});
 </script>
 
-<div class="flex h-screen items-center justify-center bg-gray-100">
-	<slot />
-</div>
+<QueryClientProvider client={queryClient}>
+	<div class="flex bg-gray-100">
+		<slot />
+	</div>
+</QueryClientProvider>
